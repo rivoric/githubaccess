@@ -26,9 +26,7 @@ def githublogin(options):
         return Github(options.user, options.pwd)
     elif options.pat:
         return Github(options.pat)
-    else:
-        print("No login details specified")
-        parser.parse_args(['-h'])
+
 
 
 def get_filtered_repos (githublogin, options):
