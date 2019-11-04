@@ -1,12 +1,12 @@
 from __future__ import print_function, with_statement
 from _utils import githuboptparse, githublogin, get_filtered_repos
 
-def has_slack_webhook (hooks):
-    """Goes through all the web hooks checking if any URL references slack"""
+def has_webhook (hooks, url):
+    """Goes through all the web hooks checking if any URL references the given URL"""
     found = False
 
     for temp_hook in hooks:
-        if temp_hook.config['url'][:23].lower() == 'https://hooks.slack.com':
+        if temp_hook.config['url'].lower() == url.lower():
             found = True
 
     return found
@@ -14,7 +14,7 @@ def has_slack_webhook (hooks):
 if __name__ == "__main__":
     parser = githuboptparse()
     parser.add_option('-w', '--webhook', action="store", dest="webhook",
-                      help="Slack webhook")
+                      help="URL for web hook")
     options, additional_args = parser.parse_args()
 
     ghcon = githublogin(options)
@@ -33,6 +33,6 @@ if __name__ == "__main__":
         parser.parse_args(['-h'])
 
     for repo in get_filtered_repos(ghcon, options):
-        if not has_slack_webhook(repo.get_hooks()):
-            print("Adding Slack webhook to {name}".format(name=repo.name))
+        if not has_webhook(repo.get_hooks(), options.webhook):
+            print("Adding webhook to {name}".format(name=repo.name))
             repo.create_hook("web", hook_config, hook_events, active=True)
